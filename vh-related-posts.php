@@ -75,9 +75,9 @@ class vh_related_posts {
      *
      * $param string $type The type of box (general/video)
      */
-    public function render_box( $post ) {
+    public function render_box( $box ) {
         $h2_titles = $this->return_types(false);
-        $type = get_post_meta( $post->ID, $this->metakey_type, true );
+        $type = get_post_meta( $box->ID, $this->metakey_type, true );
         if( !$type )
             $type = 'general';
         if( in_array($type, array_keys($h2_titles)) ) {
@@ -97,7 +97,7 @@ class vh_related_posts {
     public function render_boxes( $content ) {
         global $post;
         $posts = get_post_meta( $post->ID, $this->metakey, true );
-        $return = '<div class="vh-related-posts-container">';
+        $return = '<div id="vh-rp-container">';
         foreach( $posts as $post_id ) {
             $box = get_post( $post_id );
             if( $box )
@@ -139,7 +139,7 @@ class vh_related_posts {
     public function return_types( $originals=true ) {
         $return = array(
             'video' => 'Video',
-            'app-note' => 'App Note',
+            'app-notes' => 'App Notes',
             'case-study' => 'Case Study',
             'services' => 'Testing Services',
             'software' => 'Software Product',

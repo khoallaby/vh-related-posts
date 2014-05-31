@@ -1,13 +1,17 @@
 <div class="vhrp-box <?php echo $type; ?>">
     <h2><?php _e( $h2_titles[$type], 'vh-related-posts'); ?></h2>
+    <div class="featured-image">
     <?php
-    if ( has_post_thumbnail()) {
-        $large_image_url = wp_get_attachment_image_src( get_post_thumbnail_id($post->ID), 'large');
-        echo '<a href="' . $large_image_url[0] . '" title="' . the_title_attribute('echo=0') . '" class="lightbox">';
-        echo get_the_post_thumbnail($post->ID, 'vh-rp-image');
-        echo '</a>';
-    }
+        if ( has_post_thumbnail($box->ID)) {
+            $large_image_url = wp_get_attachment_image_src( get_post_thumbnail_id($box->ID), 'large');
+            #echo '<a href="' . $large_image_url[0] . '" title="' . the_title_attribute('echo=0') . '" class="lightbox">';
+            echo '<a href="#box-' . $box->ID . '" class="lightbox" rel="prettyPhoto">';
+            echo get_the_post_thumbnail($box->ID, 'vh-rp-image');
+            echo '</a>';
+        }
     ?>
-    <h3><?php the_title(); ?></h3>
-    <p><?php echo $post->post_excerpt; ?></p>
+    </div>
+    <h3><?php echo esc_html($box->post_title); ?></h3>
+    <p><?php echo $box->post_excerpt; ?> <a href="<?php echo get_permalink($box->ID); ?>" class="more">MORE</a></p>
+    <div id="box-<?php echo $box->ID; ?>" class="hidden"><?php echo $box->post_content; ?></div>
 </div>
