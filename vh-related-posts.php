@@ -1,27 +1,55 @@
 <?php
 
 class vh_related_posts {
+    /**
+     * Metakey for storing related posts IDs
+     *
+     * @var string
+     */
+    public $metakey = '_vh_related_posts';
+    /**
+     * Metakey for determining type of box to show
+     *
+     * @var string
+     */
+    public $metakey_type = 'type';
 
     public function __construct() {
         add_action( 'wp_enqueue_scripts', array( $this, 'add_css_js' ), 10 );
-        add_action( 'admin_enqueue_scripts', array( $this, 'add_css_js' ), 10 );
+        add_filter( 'the_content', array($this, 'render_boxes') );
+        if( is_singular() && is_main_query() ) {
+            add_filter( 'the_content', array($this, 'render_boxes') );
+        } elseif ( is_admin() ) {
+            add_action( 'load-post.php', array($this, 'load_admin') );
+            add_action( 'load-post-new.php', array($this, 'load_admin') );
+        }
+
+        add_action("after_switch_theme", array($this, 'theme_activate'), 10 ,  2);
     }
 
+    /**
+     * Load admin hooks
+     */
     public function load_admin() {
+        add_action( 'admin_enqueue_scripts', array( $this, 'add_css_js' ), 10 );
         add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
         add_action( 'save_post', array( $this, 'save' ) );
     }
 
 
     /**
-     * Adds css/js
+     * Adds css/js to admin or post/page
      */
     public function add_css_js( $page ) {
-        #if( !in_array($page, array('post.php', 'post-new.php', 'page.php', 'page-new.php' )) )
-        #    return;
-        wp_enqueue_style( 'vh-rp', plugins_url('style.css', __FILE__), 10 );
-        if( is_admin() )
-            wp_enqueue_script( 'vh-rp', plugins_url('script.js', __FILE__), 10 );
+        if( is_singular() ) {
+            wp_enqueue_style( 'vh-rp', plugins_url('style.css', __FILE__), 10 );
+        } elseif( is_admin() ) {
+            if( in_array($page, array('post.php', 'post-new.php', 'page.php', 'page-new.php' )) ) {
+                wp_enqueue_style( 'vh-rp', plugins_url('style.css', __FILE__), 10 );
+                wp_enqueue_script( 'vh-rp', plugins_url('script.js', __FILE__), 10 );
+            } else
+                return;
+        }
     }
 
     /**
@@ -45,25 +73,38 @@ class vh_related_posts {
     /**
      * Renders a box
      *
-     * $param string $type The type of box
+     * $param string $type The type of box (general/video)
      */
-    public function render_box( $type ) {
+    public function render_box( $post ) {
         $h2_titles = $this->return_metakeys();
-        if( in_array($type, array_keys($this->return_metakeys())) )
+        $type = get_post_meta( $post->ID, $this->metakey_type, true );
+        if( !$type )
+            $type = 'general';
+        if( in_array($type, array_keys($h2_titles)) ) {
+            ob_start();
             include( dirname( __FILE__ ) . "/templates/box-{$type}.php" );
+            $return = ob_get_contents();
+            ob_end_clean();
+            return $return;
+        }
     }
 
     /**
-     * Renders boxes
+     * Renders boxes after the_content()
      *
-     * $param string $type The type of box
+     * $param string $post The post
      */
-    public function render_boxes( $post ) {
-        $posts = get_post_meta( $post->ID, '_vh_related_posts', true );
+    public function render_boxes( $content ) {
+        global $post;
+        $posts = get_post_meta( $post->ID, $this->metakey, true );
+        $return = '<div class="vh-related-posts-container">';
         foreach( $posts as $post_id ) {
             $box = get_post( $post_id );
-            #if( )
+            if( $box )
+                $return .= $this->render_box( $box );
         }
+        $return .= '<div class="clear"></div></div>';
+        return $content . $return;
     }
 
 
@@ -76,7 +117,7 @@ class vh_related_posts {
         // Add an nonce field so we can check for it later.
         wp_nonce_field( 'vhrp_custom_box', 'vhrp_custom_box_nonce' );
 
-        $saved_values = get_post_meta( $post->ID, '_vh_related_posts', true );
+        $saved_values = get_post_meta( $post->ID, $this->metakey, true );
 
 
         $args = array(
@@ -95,12 +136,13 @@ class vh_related_posts {
      */
     public function return_metakeys() {
         return apply_filters( 'vhrp_box_h2_titles', array(
+            'general' => 'General', #remove later
             'video' => 'Video',
             'app-note' => 'App Note',
             'case-study' => 'Case Study',
-            'testing-services' => 'Testing Services',
-            'software-product' => 'Software Product',
-            'hardware-product' => 'Hardware Product'
+            'services' => 'Testing Services',
+            'software' => 'Software Product',
+            'hardware' => 'Hardware Product'
         ));
     }
 
@@ -136,8 +178,10 @@ class vh_related_posts {
         }
 
         // Update the meta field.
-        update_post_meta( $post_id, '_vh_related_posts', $_POST['vh_rp_posts'] );
+        update_post_meta( $post_id, $this->metakey, $_POST['vh_rp_posts'] );
     }
 
-
+    public function theme_activate() {
+        add_image_size( 'vh-rp-image', 220, 180 );
+    }
 }

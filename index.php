@@ -13,13 +13,5 @@ require_once( dirname( __FILE__ ) . '/vh-related-posts.php' );
 $vh_related_posts = new vh_related_posts();
 
 
-/**
- * Calls the class on the post edit screen.
- */
-
-if ( is_admin() ) {
-    add_action( 'load-post.php', array($vh_related_posts, 'load_admin') );
-    add_action( 'load-post-new.php', array($vh_related_posts, 'load_admin') );
-}
 
 
