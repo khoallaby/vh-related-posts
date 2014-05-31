@@ -6,13 +6,13 @@ class vh_related_posts {
      *
      * @var string
      */
-    public $metakey = '_vh_related_posts';
+    public $metakey = '_vh_rp_posts';
     /**
-     * Metakey for determining type of box to show
+     * Metakey for type of box
      *
      * @var string
      */
-    public $metakey_type = 'type';
+    public $metakey_type = '_vh_rp_type';
 
     public function __construct() {
         add_action( 'wp_enqueue_scripts', array( $this, 'add_css_js' ), 10 );
@@ -76,7 +76,7 @@ class vh_related_posts {
      * $param string $type The type of box (general/video)
      */
     public function render_box( $post ) {
-        $h2_titles = $this->return_metakeys();
+        $h2_titles = $this->return_types(false);
         $type = get_post_meta( $post->ID, $this->metakey_type, true );
         if( !$type )
             $type = 'general';
@@ -133,17 +133,23 @@ class vh_related_posts {
 
     /**
      * Return metakey => Title array
+     *
+     * @param $originals Includes only original 6 types (w/o general and lightbox templates) - For dropdown population purposes
      */
-    public function return_metakeys() {
-        return apply_filters( 'vhrp_box_h2_titles', array(
-            'general' => 'General', #remove later
+    public function return_types( $originals=true ) {
+        $return = array(
             'video' => 'Video',
             'app-note' => 'App Note',
             'case-study' => 'Case Study',
             'services' => 'Testing Services',
             'software' => 'Software Product',
             'hardware' => 'Hardware Product'
-        ));
+        );
+        if( !$originals ) {
+            $return['general'] = 'General';
+            $return['lightbox'] = 'Lightbox';
+        }
+        return apply_filters( 'vhrp_box_h2_titles', $return );
     }
 
 
@@ -178,7 +184,8 @@ class vh_related_posts {
         }
 
         // Update the meta field.
-        update_post_meta( $post_id, $this->metakey, $_POST['vh_rp_posts'] );
+        update_post_meta( $post_id, $this->metakey, $_POST[$this->metakey] );
+        update_post_meta( $post_id, $this->metakey_type, $_POST[$this->metakey_type] );
     }
 
     public function theme_activate() {

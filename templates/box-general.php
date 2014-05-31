@@ -4,6 +4,6 @@
      if ( has_post_thumbnail())
          the_post_thumbnail('vh-rp-image');
     ?>
-    <h3><?php the_title(); ?></h3>
-    <p><?php echo $post->post_excerpt; ?></p>
+    <h3><?php #the_title(); ?></h3>
+    <p><?php #the_excerpt(); ?></p>
 </div>

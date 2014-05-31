@@ -1,12 +1,12 @@
 /* Admin */
 
-.vh-rp-admin-container { overflow-y: auto; height: 200px; }
+.vh-rp-select-container { overflow-y: auto; height: 200px; }
 
 /* Boxes */
 
 .clear { clear: both; }
 .vhrp-box { background: #f0eded; border: 1px solid #e0dedf; float: left; margin: 10px 15px; min-height: 330px; width: 210px; }
-    .vhrp-box h2 { color: white; font: 28px; font-weight: normal; line-height: 50px; margin: 0; min-height: 50px; text-align: center; text-transform: capitalize; }
+    .vhrp-box h2 { color: white; font: 24px 'Open Sans', Arial, sans-serif; font-weight: normal; line-height: 50px; margin: 0; min-height: 50px; text-align: center; text-transform: capitalize; }
     .vhrp-box h3 { color: black; font: 18px; font-weight: normal; text-align: center; }
 
 
