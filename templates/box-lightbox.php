@@ -12,6 +12,6 @@
     ?>
     </div>
     <h3><?php echo esc_html($box->post_title); ?></h3>
-    <p><?php echo $box->post_excerpt; ?> <a href="<?php echo get_permalink($box->ID); ?>" class="more">MORE</a></p>
-    <div id="box-<?php echo $box->ID; ?>" class="hidden"><?php echo $box->post_content; ?></div>
+    <p><?php echo $box->post_excerpt; ?> <a href="#box- <?php echo $box->ID; ?>" class="more">MORE</a></p>
+    <div id="box-<?php echo $box->ID; ?>" class="hidden"><?php echo wpautop($box->post_content); ?></div>
 </div>

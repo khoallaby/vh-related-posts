@@ -1,1 +1,1 @@
-<?php require( dirname( __FILE__ ) . "/box-lightbox.php" ); ?>
+<?php require( dirname( __FILE__ ) . "/box-general.php" ); ?>
