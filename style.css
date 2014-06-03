@@ -24,3 +24,5 @@
 .vhrp-box.hardware h2 { background: #132d4c; }
 
 /* div.pp_default iframe { width: auto !important; } */
+
+#pp_full_res .pp_inline p { line-height: 25px; }
